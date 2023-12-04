@@ -1,0 +1,6 @@
+ec2-instance:
+  hosts:
+    laravel-app:
+      ansible_host: 54.151.180.206
+  vars:
+    ansible_user: ubuntu
