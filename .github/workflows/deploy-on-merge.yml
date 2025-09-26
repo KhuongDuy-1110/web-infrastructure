@@ -1,0 +1,25 @@
+name: Test CI/CD Runner
+
+on:
+  push:
+    branches:
+      - master   # trigger khi merge vào master
+
+jobs:
+  test-runner:
+    runs-on: [self-hosted, tf-runner]   # dùng runner bạn đã cài trên server
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Hello World
+        run: echo "CI/CD runner đã chạy thành công 🚀"
+
+      - name: Hiển thị thư mục hiện tại
+        run: pwd
+
+      - name: Liệt kê file trong repo
+        run: ls -la
+
+      - name: Kiểm tra phiên bản Terraform (nếu đã cài)
+        run: terraform -version || echo "Terraform chưa cài"
