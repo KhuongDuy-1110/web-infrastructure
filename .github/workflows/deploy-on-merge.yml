@@ -3,11 +3,11 @@ name: Test CI/CD Runner
 on:
   push:
     branches:
-      - master   # trigger khi merge vào master
+      - master
 
 jobs:
   test-runner:
-    runs-on: [self-hosted, tf-runner]   # dùng runner bạn đã cài trên server
+    runs-on: [self-hosted, tf-runner]
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -23,3 +23,6 @@ jobs:
 
       - name: Kiểm tra phiên bản Terraform (nếu đã cài)
         run: terraform -version || echo "Terraform chưa cài"
+
+      - name: Test CI CD again
+        run: echo "CI CD Ok"
