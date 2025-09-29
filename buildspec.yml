@@ -8,8 +8,8 @@ phases:
   pre_build:
     commands:
       - echo ==> Pre-build phase
-      - echo Current date: $(date)
-      - echo Current directory: $(pwd)
+      - echo Current date:$(date)
+      - echo Current directory:$(pwd)
   build:
     commands:
       - echo ==> Build phase
