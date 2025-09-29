@@ -1,0 +1,27 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo "==> Install phase"
+      - echo "Nothing to install for now"
+  pre_build:
+    commands:
+      - echo "==> Pre-build phase"
+      - echo "Current date: $(date)"
+      - echo "Current directory: $(pwd)"
+  build:
+    commands:
+      - echo "==> Build phase"
+      - echo "Listing files..."
+      - ls -la
+      - echo "Simulating build step..."
+      - echo "Hello from CodeBuild!"
+  post_build:
+    commands:
+      - echo "==> Post-build phase"
+      - echo "Build completed successfully on $(date)"
+
+artifacts:
+  files:
+    - '**/*'
