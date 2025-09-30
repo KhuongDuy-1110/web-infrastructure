@@ -6,6 +6,11 @@ terraform {
     }
   }
   required_version = ">=1.6.3"
+  backend "s3" {
+    bucket = "khuong-bucket-tfstate"
+    key    = "2025/terraform.tfstate"
+    region = "ap-southeast-1"
+  }
 }
 
 provider "aws" {
