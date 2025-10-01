@@ -1,27 +1,25 @@
 version: 0.2
 
+env:
+  variables:
+    AWS_DEFAULT_REGION_PARAM: "/khuong/hackathon/region"
+    SSM_ACCESS_KEY_PARAM: "/khuong/hackathon/access-key"
+    SSM_SECRET_KEY_PARAM: "/khuong/hackathon/private-key"
+
+    TF_DIR: "server-infrastructure"
+    TF_STATE_S3_BUCKET: "khuong-bucket-tfstate"
+    TF_STATE_S3_KEY: "2025/terraform.tfstate"
+
 phases:
   install:
+    runtime-versions:
+      python: 3.9
     commands:
-      - echo ==> Install phase
-      - echo Nothing to install for now
-  pre_build:
-    commands:
-      - echo ==> Pre-build phase
-      - echo Current date:$(date)
-      - echo Current directory:$(pwd)
-  build:
-    commands:
-      - echo ==> Build phase
-      - echo Listing files...
-      - ls -la
-      - echo Simulating build step...
-      - echo Hello from CodeBuild!
-  post_build:
-    commands:
-      - echo ==> Post-build phase
-      - echo Build completed successfully on $(date)
-
-artifacts:
-  files:
-    - '**/*'
+      - echo "----- INSTALL PHASE -----"
+      - apt-get update -y || true
+      - apt-get install -y unzip curl jq || true
+      - echo "Install terraform ${TF_VERSION} ..."
+      - curl -sLo /tmp/terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
+      - unzip -o /tmp/terraform.zip -d /tmp
+      - mv /tmp/terraform /usr/local/bin/terraform
+      - terraform --version
