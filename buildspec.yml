@@ -13,13 +13,66 @@ env:
 phases:
   install:
     runtime-versions:
-      python: 3.9
+      python: 3.11
     commands:
       - echo "----- INSTALL PHASE -----"
-      - apt-get update -y || true
-      - apt-get install -y unzip curl jq || true
-      - echo "Install terraform ${TF_VERSION} ..."
-      - curl -sLo /tmp/terraform.zip "https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip"
-      - unzip -o /tmp/terraform.zip -d /tmp
-      - mv /tmp/terraform /usr/local/bin/terraform
+      - set -eo pipefail
+      - yum -y update || true
+      - yum -y install yum-utils jq || true
+      # Install AWS CLI v2 if not present
+      - if ! command -v aws >/dev/null 2>&1; then
+          echo "Installing AWS CLI v2";
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip";
+          unzip awscliv2.zip;
+          ./aws/install --update;
+        else
+          echo "aws cli already installed: $(aws --version)";
+        fi
+      # Install Terraform
+      - yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+      - yum -y install terraform
       - terraform --version
+
+  pre_build:
+    commands:
+      - set -eo pipefail
+      - echo "Reading AWS credentials from SSM Parameter Store"
+      # Get default region
+      - if [ -n "$AWS_DEFAULT_REGION_PARAM" ]; then
+          export AWS_DEFAULT_REGION=$(aws ssm get-parameter --name "$AWS_DEFAULT_REGION_PARAM" --with-decryption --query Parameter.Value --output text --region "$AWS_DEFAULT_REGION");
+        fi
+      # Get access key
+      - if [ -n "$SSM_ACCESS_KEY_PARAM" ]; then
+          export AWS_ACCESS_KEY_ID=$(aws ssm get-parameter --name "$SSM_ACCESS_KEY_PARAM" --with-decryption --query Parameter.Value --output text --region "$AWS_DEFAULT_REGION");
+        fi
+      # Get secret key
+      - if [ -n "$SSM_SECRET_KEY_PARAM" ]; then
+          export AWS_SECRET_ACCESS_KEY=$(aws ssm get-parameter --name "$SSM_SECRET_KEY_PARAM" --with-decryption --query Parameter.Value --output text --region "$AWS_DEFAULT_REGION");
+        fi
+
+      - echo "Configure aws cli default region and output"
+      - aws configure set region "$AWS_DEFAULT_REGION"
+      - aws configure set output json
+      - echo "Verify identity (caller identity)"
+      - aws sts get-caller-identity --region "$AWS_DEFAULT_REGION" || (echo "Failed to get caller identity — check SSM params & CodeBuild role permissions" && exit 1)
+      - echo "Switching to TF_DIR=$TF_DIR"
+      - cd "$TF_DIR"
+
+  build:
+    commands:
+      - echo "----- BUILD PHASE -----"
+      - set -eo pipefail
+      - terraform init -backend-config="bucket=$TF_STATE_S3_BUCKET" \
+        -backend-config="key=$TF_STATE_S3_KEY" \
+        -backend-config="region=$AWS_DEFAULT_REGION"
+      - echo "terraform validate ..."
+      - terraform validate || (echo "Error:terraform validate failed" && exit 1)
+      - echo "terraform plan ..."
+      - terraform plan -out=tfplan -input=false || (echo "Error:terraform plan failed" && exit 1)
+      # - echo "terraform apply ..."
+      # - terraform apply -input=false -auto-approve tfplan || (echo "Error: terraform apply failed" && exit 1)
+
+  post_build:
+    commands:
+      - echo "----- POST BUILD PHASE -----"
+      - echo "Build completed on `date`"
