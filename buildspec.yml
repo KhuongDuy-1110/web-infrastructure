@@ -53,9 +53,7 @@ phases:
     commands:
       - echo "----- BUILD PHASE -----"
       - set -eo pipefail
-      - terraform init -backend-config="bucket=$TF_STATE_S3_BUCKET" \
-        -backend-config="key=$TF_STATE_S3_KEY" \
-        -backend-config="region=$AWS_DEFAULT_REGION"
+      - terraform init
       - echo "terraform validate ..."
       - terraform validate || (echo "Error:terraform validate failed" && exit 1)
       - echo "terraform plan ..."
