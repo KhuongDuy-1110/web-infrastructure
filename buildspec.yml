@@ -5,6 +5,7 @@ env:
     AWS_DEFAULT_REGION_PARAM: "/khuong/hackathon/region"
     SSM_ACCESS_KEY_PARAM: "/khuong/hackathon/access-key"
     SSM_SECRET_KEY_PARAM: "/khuong/hackathon/private-key"
+    SSM_SSH_PUBLIC_KEY: "/khuong/hackathon/ssh-public-key"
   variables:
     TF_DIR: "server-infrastructure"
     TF_STATE_S3_BUCKET: "khuong-bucket-tfstate"
@@ -53,6 +54,7 @@ phases:
     commands:
       - echo "----- BUILD PHASE -----"
       - set -eo pipefail
+      - export TF_VAR_public_key="$SSM_SSH_PUBLIC_KEY"
       - terraform init
       - echo "terraform validate ..."
       - terraform validate || (echo "Error:terraform validate failed" && exit 1)
