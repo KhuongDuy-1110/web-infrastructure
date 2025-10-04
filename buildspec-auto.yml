@@ -67,3 +67,7 @@ phases:
     commands:
       - echo "----- POST BUILD PHASE -----"
       - echo "Build completed on `date`"
+
+  artifacts:
+    files:
+      - $TF_DIR/tfplan
