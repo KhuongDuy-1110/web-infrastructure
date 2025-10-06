@@ -70,4 +70,6 @@ phases:
 
 artifacts:
   files:
-    - $TF_DIR/tfplan
+    - '**/*'
+  exclude:
+    - '$TF_DIR/.terraform'
