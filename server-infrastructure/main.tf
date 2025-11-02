@@ -87,3 +87,8 @@ resource "aws_security_group" "sg_http" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
+
+locals {
+  apply_timestamp = timestamp()
+  vn_timestamp = formatdate("YYYY-MM-DD hh:mm:ss", timeadd(local.apply_timestamp, "7h"))
+}

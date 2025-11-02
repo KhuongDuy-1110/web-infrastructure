@@ -1,0 +1,52 @@
+{
+  "security_groups": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "created_at": "string",
+        "name": "string",
+        "services_id": [
+          "set",
+          "string"
+        ],
+        "status": "number",
+        "updated_at": "string"
+      }
+    ],
+    "value": {
+      "created_at": "2025-11-02 09:43:55",
+      "name": "EC2 Security Groups",
+      "services_id": [
+        "sg-044fcb85d22882b1c",
+        "sg-081ae55f4e650660c"
+      ],
+      "status": 1,
+      "updated_at": "2025-11-02 09:43:55"
+    }
+  },
+  "server_information": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {
+        "created_at": "string",
+        "name": "string",
+        "private_ip": "string",
+        "public_ip": "string",
+        "service_id": "string",
+        "status": "number",
+        "updated_at": "string"
+      }
+    ],
+    "value": {
+      "created_at": "2025-11-02 09:43:55",
+      "name": "EC2 Instance",
+      "private_ip": "172.31.31.147",
+      "public_ip": "3.0.100.250",
+      "service_id": "i-079475ac1ea0e7544",
+      "status": 1,
+      "updated_at": "2025-11-02 09:43:55"
+    }
+  }
+}
