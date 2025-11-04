@@ -15,7 +15,7 @@ output "security_groups_ssh" {
   description = "Security group detail information."
   value = {
     name = "EC2 Security Groups For SSH"
-    services_id = aws_security_group.sg_ssh.id
+    service_id = aws_security_group.sg_ssh.id
     status = 1
     created_at = local.vn_timestamp
     updated_at = local.vn_timestamp
@@ -26,7 +26,7 @@ output "security_groups_http" {
   description = "Security group detail information."
   value = {
     name = "EC2 Security Groups for Http"
-    services_id = aws_security_group.sg_http.id
+    service_id = aws_security_group.sg_http.id
     status = 1
     created_at = local.vn_timestamp
     updated_at = local.vn_timestamp
