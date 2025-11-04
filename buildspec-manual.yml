@@ -10,6 +10,7 @@ env:
     TF_DIR: "server-infrastructure"
     TF_STATE_S3_BUCKET: "khuong-bucket-tfstate"
     TF_STATE_S3_KEY: "2025/terraform.tfstate"
+    TF_OUTPUT_S3_BUCKET: "betterversion-tf-asset-inventory"
 
 phases:
   install:
@@ -55,3 +56,9 @@ phases:
       - export TF_VAR_public_key="$SSM_SSH_PUBLIC_KEY"
       - terraform init
       - terraform apply -input=false -auto-approve tfplan
+      - echo "Generating Terraform outputs..."
+      - terraform output -json > output.json
+      - echo "Uploading outputs to S3..."
+      - |
+        TIMESTAMP=$(date +%s)
+        aws s3 cp output.json s3://${TF_OUTPUT_S3_BUCKET}/apply-events/output-${TIMESTAMP}.json
